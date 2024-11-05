@@ -1,6 +1,7 @@
 The Siren’s City
 
 Differences:
+
 Art assets
 I changed the setting from a forest to a city, because I felt it suited both the music and gameplay more. I also liked the sound of the title better.
 
