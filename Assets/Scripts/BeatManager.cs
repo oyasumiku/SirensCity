@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEditor.Search;
 using UnityEngine;
 using UnityEngine.Events;
+
 public class BeatManager : MonoBehaviour
 {
     [SerializeField] private float _bpm;

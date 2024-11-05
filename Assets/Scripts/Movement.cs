@@ -5,7 +5,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
-
+using UnityEngine.Events;
 public class Movement : MonoBehaviour
 {
 
@@ -39,11 +39,14 @@ public class Movement : MonoBehaviour
     [SerializeField] private float downOffset = 1.0f;
     public AudioClip jumpSound;
     public AudioClip interruptSound;
+    public AudioClip finishSound;
     [SerializeField] private GameObject _sprites;
     [SerializeField] private float downwardForce = 2.0f;
     float startX = 0;
     float startY = 0;
     private bool checkpointFlag = true;
+    private bool notCompleted = true;
+    [SerializeField] private UnityEvent _trigger;
 
     private void Awake()
     {
@@ -54,11 +57,14 @@ public class Movement : MonoBehaviour
     }
     private void Update()
     {
+
+        // update velocity
         _rigidbody.velocity = new Vector2(_currentVelocity, _rigidbody.velocity.y);
 
+        // death check
         deathCollisionCheck();
         
-
+        // velocity tracking
         TrackVelocity();
         //Debug.Log(_currentVelocity);
 
@@ -73,6 +79,7 @@ public class Movement : MonoBehaviour
         float modifier = 1;
         xMovement = ctx.ReadValue<float>();
 
+        // calculate moving direction
         if (this.IsGrounded())
         {
             float speedToAdd = xMovement * speed * modifier;
@@ -121,9 +128,10 @@ public class Movement : MonoBehaviour
     public void OnJump(InputAction.CallbackContext ctx)
     {
         
+        // check if player is grounded
         if (_collider.IsTouchingLayers(ground) && ctx.performed)
         {
-            //Debug.Log("Can jump");
+
             SoundFXManager.Instance.PlayClip(jumpSound, transform, 0.1f);
             Vector3 jump = new Vector3(0, 1, 0);
             
@@ -131,6 +139,7 @@ public class Movement : MonoBehaviour
             
         }
 
+        // check if player can double jump
         else if(!(_collider.IsTouchingLayers(ground)) && hasDoubleJump && ctx.performed)
         {
             SoundFXManager.Instance.PlayClip(jumpSound, transform, 0.1f);
@@ -150,8 +159,11 @@ public class Movement : MonoBehaviour
 
 
     }
+
+    // fast land mechanics
     public void OnDown(InputAction.CallbackContext ctx)
-    {
+    {   
+        // if down is pressed, check for down held
         if (ctx.performed)
         {
             downHeld = true;
@@ -159,6 +171,7 @@ public class Movement : MonoBehaviour
             
             _currentVelocity = 0;
 
+            // if player is in the air + can hold down, perform a fast land
             if (downCharged && !(this.IsGrounded()))
             {
                 SoundFXManager.Instance.PlayClip(interruptSound, transform, 0.3f);
@@ -186,12 +199,6 @@ public class Movement : MonoBehaviour
     private void TrackVelocity()
     {
 
-        //_currentVelocity = _rigidbody.velocity;
-
-        // track direction facing
-        //
-        //Debug.Log(_currentVelocity);
-        
 
         // face left if moving left, face right if moving right
         DirectionCheck(true);
@@ -201,8 +208,6 @@ public class Movement : MonoBehaviour
         // track if rising
         if (_rigidbody.velocity.y > 0.01)
         {
-            //Debug.Log("Set IsRising to True");
-            //_rigidbody.velocity = new Vector2(_currentVelocity, 0);
             animator.SetBool(IsRising, true);
         }
 
@@ -219,13 +224,17 @@ public class Movement : MonoBehaviour
             animator.SetBool(IsFalling, false);
         }
 
+        // use for animations
         bool isRising = animator.GetBool(IsRising);
         bool isFalling = animator.GetBool(IsFalling);
+
+        // refresh the players double jump
         if (_collider.IsTouchingLayers(ground))
         {
             hasDoubleJump = true;
         }
 
+        // reset the down state of the player
         if (IsGrounded() && !(downCharged))
         {
             downCharged = true;
@@ -247,12 +256,6 @@ public class Movement : MonoBehaviour
                 _currentVelocity = 0;
             }
         }
-        // apply air friction
-        /*else if (!(_collider.IsTouchingLayers(ground)) && Mathf.Abs(xMovement) < 0.1f)
-        {
-            _currentVelocity *= airFriction;
-        }
-        */
 
         // set grounded bool
         animator.SetBool(TouchingGround, IsGrounded() );
@@ -260,6 +263,7 @@ public class Movement : MonoBehaviour
 
     }
 
+    // booleans for different states
     bool IsGrounded ()
     {
         return _collider.IsTouchingLayers(ground);
@@ -280,6 +284,12 @@ public class Movement : MonoBehaviour
         return _rigidbody.position.x > 130;
     }
 
+    bool IsCompleted()
+    {
+        return _rigidbody.position.x > 225;
+    }
+
+    // check the direction of the player
     void DirectionCheck (bool checkGrounded)
     {
         float directionVelocity = _rigidbody.velocity.x;
@@ -302,6 +312,7 @@ public class Movement : MonoBehaviour
         transform.localScale = localScale;
     }
 
+    // check for death states + completion states
     void deathCollisionCheck()
     {
         if (IsTouchingObstacles())
@@ -325,6 +336,15 @@ public class Movement : MonoBehaviour
             startX = 130;
             startY = 4;
             _currentVelocity = 0;
+            _trigger.Invoke();
+        }
+
+        if (IsCompleted() && notCompleted)
+        {
+            SoundFXManager.Instance.PlayClip(finishSound, transform, 0.3f);
+            notCompleted = false;
+            Debug.Log("completed");
+            //_trigger.Invoke();
         }
     }
 }
