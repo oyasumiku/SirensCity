@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
 using UnityEngine.Events;
+using TMPro;
 public class Movement : MonoBehaviour
 {
 
@@ -47,6 +48,9 @@ public class Movement : MonoBehaviour
     private bool checkpointFlag = true;
     private bool notCompleted = true;
     [SerializeField] private UnityEvent _trigger;
+    [SerializeField] private UnityEvent _completionTrigger;
+
+    public TMP_Text finalText;
 
     private void Awake()
     {
@@ -314,21 +318,22 @@ public class Movement : MonoBehaviour
 
     // check for death states + completion states
     void deathCollisionCheck()
-    {
+    {   
+        // if touches an obstacle
         if (IsTouchingObstacles())
         {
             Debug.Log("Touching obstacles");
             Vector2 position = new Vector2(startX, startY);
             _rigidbody.position = position;
         }
-
+        // if is below stage
         if (IsBelowDeathBarrier())
         {
             Debug.Log("Touching obstacles");
             Vector2 position = new Vector2(startX, startY);
             _rigidbody.position = position;
         }
-
+        // if reaches checkpoint
         if (checkpointFlag && IsPastCheckpoint())
         {
             checkpointFlag = false;
@@ -338,13 +343,14 @@ public class Movement : MonoBehaviour
             _currentVelocity = 0;
             _trigger.Invoke();
         }
-
+        // if stage is completed
         if (IsCompleted() && notCompleted)
         {
+            finalText.text = "Level completed!";
             SoundFXManager.Instance.PlayClip(finishSound, transform, 0.3f);
             notCompleted = false;
             Debug.Log("completed");
-            //_trigger.Invoke();
+            _completionTrigger.Invoke();
         }
     }
 }

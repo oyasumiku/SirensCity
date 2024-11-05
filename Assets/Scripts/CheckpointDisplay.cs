@@ -9,6 +9,7 @@ public class CheckpointDisplay : MonoBehaviour
     public TMP_Text checkpointText;
     public string currentCheckpoint = "test";
     [SerializeField] AudioClip checkpointSound;
+    bool checkpointFlag = true;
     // Start is called before the first frame update
     void Start()
     {
@@ -18,9 +19,17 @@ public class CheckpointDisplay : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        checkpointText.text = currentCheckpoint;
+    // only set while flag is true, so completion text can be called
+        if (checkpointFlag)
+        {
+
+        
+            checkpointText.text = currentCheckpoint;
+            checkpointFlag = false;
+        }
     }
 
+    // once checkpoint is reached, set the text
     public void checkpointReached()
     {
         currentCheckpoint = "CHECKPOINT REACHED!";
@@ -30,6 +39,7 @@ public class CheckpointDisplay : MonoBehaviour
 
     }
 
+    // once the ending is reached
     public void endingReached()
     {
         currentCheckpoint = "LEVEL COMPLETED!";
@@ -45,5 +55,6 @@ public class CheckpointDisplay : MonoBehaviour
         yield return new WaitForSeconds(duration);
         Debug.Log($"Ended at {Time.time}");
         currentCheckpoint = "";
+       
     }
 }

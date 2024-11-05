@@ -102461,6 +102461,22 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  _completionTrigger:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1773132097}
+        m_TargetAssemblyTypeName: TimerDisplay, Assembly-CSharp
+        m_MethodName: setTimerFalse
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  finalText: {fileID: 1362288198}
 --- !u!114 &1703000122
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -114887,7 +114903,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06a397996b938774fbaa602c322793fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _bpm: 131
+  _bpm: 130
   _audioSource: {fileID: 2067791083}
   _intervals:
   - _steps: 0.5
@@ -114954,7 +114970,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: d379c1494745bdb4eb5250719f5a285f, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.243
+  m_Volume: 0.078
   m_Pitch: 1
   Loop: 1
   Mute: 0

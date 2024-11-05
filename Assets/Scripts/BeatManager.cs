@@ -22,7 +22,8 @@ public class BeatManager : MonoBehaviour
     void Update()
     {
         foreach (Intervals interval in _intervals) {
-
+            
+            // math for checking how long a beat should be
             float sampledTime = (_audioSource.timeSamples / (_audioSource.clip.frequency * interval.GetIntervalLength(_bpm)));
             interval.CheckForNewInterval(sampledTime);
         }
@@ -32,7 +33,7 @@ public class BeatManager : MonoBehaviour
 
 [System.Serializable]
 public class Intervals
-{
+{   
     [SerializeField] private float _steps;
     [SerializeField] private UnityEvent _trigger;
     private int _lastInterval;
@@ -42,6 +43,7 @@ public class Intervals
         return 60f / (bpm * _steps);
     }
 
+    // trigger for each interval set in unity
     public void CheckForNewInterval (float interval)
     {
         if (Mathf.FloorToInt(interval) != _lastInterval)
